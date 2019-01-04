@@ -6,7 +6,7 @@ Combustion is a sleek, modern web interface for [Transmission](https://transmiss
 
 ## Installation
 
-Latest Releases are available at: `https://github.com/Secretmapper/combustion/archive/release.zip`
+Latest Releases are available at: `https://github.com/hackstep/combustion/archive/release.zip`
 
 ### Install by changing Default Web Theme
 
@@ -62,6 +62,22 @@ export TRANSMISSION_WEB_HOME="$HOME/.combustion/combustion-release" && transmiss
 - Service Worker Support
 - Standalone server?
 - Native Mobile apps?
+
+## Developement environment
+
+To be able to build this project, execute:
+
+```bash
+git clone https://github.com/hackstep/combustion
+cd combustion
+yarn install
+yarn start
+yarn run build
+```
+
+Open Transmission daemon and then enable the web interface from the Settings window.
+
+Check this new interface out going to: `http://localhost:3000`
 
 ## Special Thanks
 

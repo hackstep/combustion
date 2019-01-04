@@ -9,20 +9,25 @@ import Checkbox from 'react-toolbox/lib/checkbox';
 import Input from 'react-toolbox/lib/input';
 
 import TorrentUpload from 'stores/torrent-upload';
-
+import Autocomplete from 'react-toolbox/lib/autocomplete';
 import styles from './styles/index.css';
 
 @inject('view_store', 'torrents_store', 'session_store')
 @observer
 @CSSModules(styles)
 class OpenDialog extends Component {
+  downloadDirs = ['/tmp/'];
   constructor(props) {
     super(props);
 
-    this.torrentUpload = new TorrentUpload();
-    this.torrentUpload.setDownloadDir(this.props.session_store.settings['download-dir']);
+    this.state = {
+      shouldStart: true,
+      downloadDirSelected: this.props.session_store.settings['download-dir'] != null ? this.props.session_store.settings['download-dir'] : this.downloadDirs[0]
+    }
 
-    this.state = { shouldStart: true }
+    this.torrentUpload = new TorrentUpload();
+    this.torrentUpload.setDownloadDir(this.state.downloadDirSelected);
+    this.props.session_store.getFreeSpace(this.state.downloadDirSelected);
   }
 
   @autobind onUpload(event) {
@@ -51,16 +56,18 @@ class OpenDialog extends Component {
   }
 
   @autobind onChangeDownloadDirectory(value) {
+    this.setState({downloadDirSelected: value});
     this.torrentUpload.setDownloadDir(value);
   }
 
   @autobind onBlurDownloadDirectory({ target }) {
+    this.onChangeDownloadDirectory(target.value);
     this.props.session_store.getFreeSpace(target.value);
   }
 
   @autobind onChangeStart() {
-    this.torrentUpload.setPaused(this.state.shouldStart);
     this.setState({ shouldStart: !this.state.shouldStart })
+    this.torrentUpload.setPaused(this.state.shouldStart);
   }
 
   renderFreeSpace() {
@@ -72,7 +79,6 @@ class OpenDialog extends Component {
 
     return `(${ size(freeSpace) } Free)`;
   }
-
 
   render() {
     const actions = [
@@ -102,13 +108,15 @@ class OpenDialog extends Component {
                 </fieldset>
 
                 <fieldset>
-                  <Input
+                  <Autocomplete
+                    direction="down"
                     label={`Destination folder ${this.renderFreeSpace()}`}
-                    name="download-dir"
-                    type="text"
+                    hint="Choose folder or type..."
+                    multiple={false}
                     onChange={this.onChangeDownloadDirectory}
                     onBlur={this.onBlurDownloadDirectory}
-                    value={this.torrentUpload.downloadDir}
+                    value={this.state.downloadDirSelected}
+                    source={this.downloadDirs}
                   />
                 </fieldset>
 
