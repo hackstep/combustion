@@ -17,9 +17,11 @@ export const view_store = new ViewStore();
 const onConnect = () => view_store.toggleConnectionDialog(false);
 const onDisconnect = () => view_store.toggleConnectionDialog(true);
 
-const rpc = new RPC(onConnect, onDisconnect);
-
 export const prefs_store = new PrefsStore(hydratePrefsStore());
+
+const rpc = new RPC(prefs_store.rpcEndpoint, onConnect, onDisconnect);
+
+export const version_store = new VersionStore(prefs_store);
 export const torrents_store = new TorrentStore(rpc, prefs_store);
 export const stats_store = new StatsStore(rpc);
 export const session_store = new SessionStore(rpc);
